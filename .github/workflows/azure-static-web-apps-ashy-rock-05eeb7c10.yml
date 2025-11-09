@@ -1,38 +1,37 @@
-name: Deploy First-App to Azure SWA
+name: FINAL DEPLOY - Angular 20 to Azure SWA
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  pull_request:
-    types: [ opened, synchronize, reopened, closed ]
-  workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # FORCE NODE 20
-      - name: Setup Node 20
+      # FORCE NODE 20 BEFORE ANYTHING ELSE
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # BUILD YOURSELF — BYPASS ORYX COMPLETELY
-      - name: Build Angular
+      # BUILD YOURSELF — ORYX NEVER TOUCHES THIS
+      - name: Install & Build
         run: |
           npm ci
+          node --version   # you will see v20.x
           npm run build -- --configuration production
 
-      # DEPLOY — NOTICE THE TWO LINES
+      # DEPLOY — SKIP ORYX COMPLETELY
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_ROCK_05EEB7C10 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ASHY_ROCK_05EEB7C10}}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          skip_app_build: false          # ← FORCE BUILD OFF → ON
-          app_location: "/"             
-          app_artifact_location: "dist/First-App/browser"   # EXACT FOLDER
+          skip_app_build: true                  # THIS KILLS ORYX
+          app_location: "/" 
+          app_artifact_location: "dist/First-App/browser"   # YOUR EXACT FOLDER
