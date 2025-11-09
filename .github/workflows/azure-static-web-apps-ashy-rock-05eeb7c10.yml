@@ -31,8 +31,9 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
-          output_location: "dist/First-app/browser"   # ← change only if your project name is different
+          app_artifact_location: "dist/First-app/browser"   # ← change only if your project name is different
           skip_app_build: true
+
 
 
 
